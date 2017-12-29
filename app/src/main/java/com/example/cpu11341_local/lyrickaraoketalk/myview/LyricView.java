@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import com.example.cpu11341_local.lyrickaraoketalk.LyricUtils;
 import com.example.cpu11341_local.lyrickaraoketalk.model.Lyric;
@@ -45,12 +46,12 @@ public class LyricView extends AppCompatTextView implements Runnable {
     public LyricView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setFocusable(true);
-        int backgroundColor = Color.BLACK;
+//        int backgroundColor = 0x00000000;
         int highlightColor = Color.RED;
         int normalColor = Color.GRAY;
 
         setMinHeight(110);
-        setBackgroundColor(backgroundColor);
+//        setBackgroundColor(backgroundColor);
 
         // Non-highlight part
         mPaint = new Paint();
@@ -250,5 +251,28 @@ public class LyricView extends AppCompatTextView implements Runnable {
                 mStop = true;
             }
         }
+    }
+
+    float dX, dY;
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                //getX getY your coordinate
+                dX = this.getX() - event.getRawX();
+                dY = this.getY() - event.getRawY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                animate()
+                        .x(event.getRawX() + dX)
+                        .y(event.getRawY() + dY)
+                        .setDuration(0)
+                        .start();
+
+                break;
+            default:
+                return false;
+        }
+        return true;
     }
 }
