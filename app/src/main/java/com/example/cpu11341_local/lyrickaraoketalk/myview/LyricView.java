@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.cpu11341_local.lyrickaraoketalk.LyricUtils;
+import com.example.cpu11341_local.lyrickaraoketalk.R;
 import com.example.cpu11341_local.lyrickaraoketalk.model.Lyric;
 import com.example.cpu11341_local.lyrickaraoketalk.model.Sentence;
 
@@ -34,6 +35,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
     private float mMiddleX;
     private float mMiddleY;
     private int mHeight;
+    private int iLoop = 0;
 
     public LyricView(Context context) {
         this(context, null);
@@ -47,7 +49,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
         super(context, attrs, defStyleAttr);
         setFocusable(true);
 //        int backgroundColor = 0x00000000;
-        int highlightColor = Color.RED;
+        int highlightColor = Color.YELLOW;
         int normalColor = Color.GRAY;
 
         setMinHeight(110);
@@ -55,21 +57,18 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
         // Non-highlight part
         mPaint = new Paint();
-        mPaint.setAntiAlias(true);
         mPaint.setTextSize(36);
         mPaint.setColor(normalColor);
         mPaint.setTypeface(Typeface.SERIF);
 
         // highlight part, current lyric
         mCurrentPaint = new Paint();
-        mCurrentPaint.setAntiAlias(true);
         mCurrentPaint.setColor(highlightColor);
         mCurrentPaint.setTextSize(36);
         mCurrentPaint.setTypeface(Typeface.create(Typeface.SERIF, Typeface.BOLD));
 
         mPaint.setTextAlign(Paint.Align.CENTER);
         mCurrentPaint.setTextAlign(Paint.Align.CENTER);
-        setHorizontallyScrolling(true);
 
     }
 
@@ -119,7 +118,6 @@ public class LyricView extends AppCompatTextView implements Runnable {
         if (arrSentences == null || arrSentences.isEmpty() || mLyricIndex == -2) {
             return;
         }
-        canvas.drawColor(0xEFeffff);
 
         float currY;
 
@@ -134,7 +132,10 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
         // Draw sentences afterwards
         int i = mLyricIndex + 1;
-        currY += DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY);
+        if (i < mLyricSentenceLength){
+            currY += DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY);
+        }
+
 
 //        int size = arrSentences.size();
 //        for (int i = mLyricIndex + 1; i < size; i++) {
@@ -206,6 +207,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
         }
         return null;
     }
+
     public void play() {
         mStop = false;
         Thread thread = new Thread(this);
@@ -228,7 +230,6 @@ public class LyricView extends AppCompatTextView implements Runnable {
         if (mStartTime == -1) {
             mStartTime = System.currentTimeMillis();
         }
-
         while (mLyricIndex != -2) {
             if (mStop) {
                 return;
@@ -236,7 +237,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
             long ts = System.currentTimeMillis() - mStartTime;
             if (ts >= mNextSentenceTime) {
                 mNextSentenceTime = updateIndex(ts);
-
+                iLoop = 0;
                 // Redraw only when window is visible
                 if (mIsForeground) {
                     mHandler.post(new Runnable() {
@@ -246,6 +247,8 @@ public class LyricView extends AppCompatTextView implements Runnable {
                         }
                     });
                 }
+            } else {
+                iLoop++;
             }
             if (mNextSentenceTime == -1) {
                 mStop = true;

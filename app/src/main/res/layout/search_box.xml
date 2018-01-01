@@ -13,4 +13,13 @@
         android:padding="5dp"
         android:hint="Tìm bài hát, ca sĩ mà bạn yêu thích"
         android:textSize="15dp" />
+    <TextView
+        android:id="@+id/titleItem"
+        android:layout_below="@id/searchBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_title"
+        android:text="Bài hát đề cử"
+        android:layout_margin="7dp"
+        android:paddingLeft="15dp"/>
 </RelativeLayout>

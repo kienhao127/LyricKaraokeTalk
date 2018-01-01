@@ -1,6 +1,8 @@
 package com.example.cpu11341_local.lyrickaraoketalk.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,9 +37,6 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case 0:{
                 return new SearchBoxHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.search_box,parent,false));
             }
-            case 1:{
-                return new TitleItemHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.title_item,parent,false));
-            }
             default:{
                 return new SongItemHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.song_item,parent,false));
             }
@@ -49,14 +48,10 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         switch (holder.getItemViewType()) {
             case 0:
                 break;
-            case 1:
-                TitleItemHolder titleItemHolder = (TitleItemHolder) holder;
-                titleItemHolder.title.setText("Bài hát đề cử");
-                break;
             default:
                 SongItemHolder songItemHolder = (SongItemHolder) holder;
-                songItemHolder.artistName.setText(songs.get(position - 2).getArtist());
-                songItemHolder.songName.setText(songs.get(position - 2).getName());
+                songItemHolder.artistName.setText(songs.get(position - 1).getArtist());
+                songItemHolder.songName.setText(songs.get(position - 1).getName());
                 break;
         }
     }
@@ -71,24 +66,39 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return songs.size() + 2;
+        return songs.size() + 1;
     }
 
     public class SearchBoxHolder extends RecyclerView.ViewHolder {
         EditText searchBox;
+        TextView title;
 
         public SearchBoxHolder(View view){
             super(view);
             searchBox = (EditText) view.findViewById(R.id.searchBox);
-        }
-    }
-
-    public class TitleItemHolder extends RecyclerView.ViewHolder {
-        TextView title;
-
-        public TitleItemHolder(View view){
-            super(view);
             title = (TextView) view.findViewById(R.id.titleItem);
+
+            searchBox.clearFocus();
+            searchBox.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    if (searchBox.getText().toString().trim().length() > 0){
+                        title.setText("Kết quả tìm kiếm");
+                    } else {
+                        title.setText("Bài hát đề cử");
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
         }
     }
 
