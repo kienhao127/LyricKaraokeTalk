@@ -43,10 +43,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="40dp"
+            android:layout_marginLeft="45dp"
             android:text="Tắt lời"
             android:textColor="#000"
             android:textSize="15dp" />
+
+        <View
+            android:layout_width="0.1dp"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="5dp"
+            android:background="#88555555" />
 
         <TextView
             android:id="@+id/turnOffMusic"

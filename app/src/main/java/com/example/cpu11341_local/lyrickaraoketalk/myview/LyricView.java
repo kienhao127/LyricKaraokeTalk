@@ -103,6 +103,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
             mPaint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText(text, mMiddleX, startY, paint);
         }
+        Log.d("Line", String.valueOf(line));
         return line;
     }
 
