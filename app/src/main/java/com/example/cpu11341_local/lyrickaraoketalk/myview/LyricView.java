@@ -48,12 +48,10 @@ public class LyricView extends AppCompatTextView implements Runnable {
     public LyricView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setFocusable(true);
-//        int backgroundColor = 0x00000000;
         int highlightColor = Color.YELLOW;
         int normalColor = Color.GRAY;
 
         setMinHeight(110);
-//        setBackgroundColor(backgroundColor);
 
         // Non-highlight part
         mPaint = new Paint();
@@ -80,14 +78,17 @@ public class LyricView extends AppCompatTextView implements Runnable {
         if (textWidth > width) {
             int length = text.length();
             int startIndex = 0;
-            int endIndex = Math.min((int) ((float) length * (width / textWidth)), length - 1);
+            int endIndex = text.indexOf(" ", (int) (text.length()/3*2));
+            if (endIndex == -1){
+                endIndex = Math.min((int) ((float) length * (width / textWidth)), length - 1);
+            }
             int perLineLength = endIndex - startIndex;
 
             ArrayList<String> lines = new ArrayList<>();
             lines.add(text.substring(startIndex, endIndex));
             while (endIndex < length - 1) {
                 startIndex = endIndex;
-                endIndex = Math.min(startIndex + perLineLength, length - 1);
+                endIndex = Math.min(startIndex + perLineLength, length);
                 lines.add(text.substring(startIndex, endIndex));
             }
             int linesLength = lines.size();
@@ -108,10 +109,12 @@ public class LyricView extends AppCompatTextView implements Runnable {
     }
 
     @Override
-    protected void onDraw(Canvas canvas){
+    protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        if (lyric == null){
+        if (iLoop < DY) {
+            iLoop++;
+        }
+        if (lyric == null) {
             return;
         }
 
@@ -125,18 +128,25 @@ public class LyricView extends AppCompatTextView implements Runnable {
         if (mLyricIndex > -1) {
             // Current line with highlighted color
             currY = mMiddleY + DY * drawText(
-                    canvas, mCurrentPaint, arrSentences.get(mLyricIndex).getContent(), mMiddleY);
+                    canvas, mCurrentPaint, arrSentences.get(mLyricIndex).getContent(), mMiddleY + DY - iLoop);
         } else {
             // First line is not from timestamp 0
-            currY = mMiddleY + DY;
+            currY = mMiddleY + iLoop;
         }
 
         // Draw sentences afterwards
         int i = mLyricIndex + 1;
-        if (i < mLyricSentenceLength){
-            currY += DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY);
+        if (i < mLyricSentenceLength) {
+            currY += DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY + DY - iLoop);
         }
 
+        currY = mMiddleY - DY;
+        // Draw sentences before current one
+        i = mLyricIndex - 1;
+        if (i >= 0) {
+            currY -= DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY + DY - iLoop);
+        }
+        invalidate();
 
 //        int size = arrSentences.size();
 //        for (int i = mLyricIndex + 1; i < size; i++) {
@@ -224,8 +234,6 @@ public class LyricView extends AppCompatTextView implements Runnable {
     private boolean mIsForeground = true;
     private long mNextSentenceTime = -1;
 
-    private Handler mHandler = new Handler();
-
     @Override
     public void run() {
         if (mStartTime == -1) {
@@ -237,19 +245,8 @@ public class LyricView extends AppCompatTextView implements Runnable {
             }
             long ts = System.currentTimeMillis() - mStartTime;
             if (ts >= mNextSentenceTime) {
-                mNextSentenceTime = updateIndex(ts);
                 iLoop = 0;
-                // Redraw only when window is visible
-                if (mIsForeground) {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            invalidate();
-                        }
-                    });
-                }
-            } else {
-                iLoop++;
+                mNextSentenceTime = updateIndex(ts);
             }
             if (mNextSentenceTime == -1) {
                 mStop = true;

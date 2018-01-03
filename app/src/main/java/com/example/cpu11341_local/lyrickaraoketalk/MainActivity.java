@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
     LinearLayout playMusicMenu;
     TextView turnOffMusic;
     TextView onOffLyric;
+    Timer timer;
 
     void init(){
         lyricView = (LyricView) findViewById(R.id.lyricView);
@@ -91,17 +92,7 @@ public class MainActivity extends Activity {
                     Animation showMenu = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale);
                     playMusicMenu.setVisibility(View.VISIBLE);
                     playMusicMenu.startAnimation(showMenu);
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    playMusicMenu.setVisibility(View.GONE);
-                                }
-                            });
-                        }
-                    }, 5000);
+                    autoCloseMenu();
                 }
             }
         });
@@ -115,6 +106,10 @@ public class MainActivity extends Activity {
                 } else {
                     lyricView.setVisibility(View.VISIBLE);
                     onOffLyric.setText("Tắt lời");
+                }
+                if (timer != null) {
+                    timer.cancel();
+                    autoCloseMenu();
                 }
             }
         });
@@ -130,6 +125,21 @@ public class MainActivity extends Activity {
                 lyricView.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void autoCloseMenu(){
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new TimerTask() {
+                    @Override
+                    public void run() {
+                        playMusicMenu.setVisibility(View.GONE);
+                    }
+                });
+            }
+        }, 5000);
     }
 
     @Override
