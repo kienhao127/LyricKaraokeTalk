@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -32,7 +33,7 @@ public class MainActivity extends Activity {
     void init(){
         lyricView = (LyricView) findViewById(R.id.lyricView);
         karaBtn = (ImageView) findViewById(R.id.karaBtn);
-        playingMusic = (ImageView) findViewById(R.id.playing_music);
+        playingMusic = (ImageView) findViewById(R.id.playingMusic);
         playMusicMenu = (LinearLayout) findViewById(R.id.playMusicMenu);
         turnOffMusic = (TextView) findViewById(R.id.turnOffMusic);
         onOffLyric = (TextView) findViewById(R.id.onOffLyric);
@@ -80,7 +81,7 @@ public class MainActivity extends Activity {
         mp = MediaPlayer.create(getApplicationContext(), mp3ID);// the song is a filename which i have pasted inside a folder **raw** created under the **res** folder.//
         mp.start();
 
-        Animation playingMusicRotate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
+        final Animation playingMusicRotate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
         playingMusic.setVisibility(View.VISIBLE);
         playingMusic.startAnimation(playingMusicRotate);
         playingMusic.setOnClickListener(new View.OnClickListener() {

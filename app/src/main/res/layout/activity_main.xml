@@ -31,10 +31,10 @@
         android:id="@+id/playMusicMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/playing_music"
-        android:layout_alignLeft="@+id/playing_music"
-        android:layout_alignStart="@+id/playing_music"
-        android:layout_alignTop="@+id/playing_music"
+        android:layout_alignBottom="@+id/playingMusic"
+        android:layout_alignLeft="@+id/playingMusic"
+        android:layout_alignStart="@+id/playingMusic"
+        android:layout_alignTop="@+id/playingMusic"
         android:background="@drawable/round_background"
         android:visibility="gone">
 
@@ -61,21 +61,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_margin="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="15dp"
             android:text="Thoát"
             android:textColor="#000"
             android:textSize="15dp" />
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/playing_music"
+        android:id="@+id/playingMusic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/karaBtn"
-        android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/karaBtn"
-        android:layout_marginTop="94dp"
+        android:layout_marginTop="80dp"
         android:src="@drawable/playing_music"
-        android:visibility="gone" />
-
+        android:visibility="gone"/>
 </RelativeLayout>

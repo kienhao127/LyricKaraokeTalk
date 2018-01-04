@@ -49,9 +49,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
         super(context, attrs, defStyleAttr);
         setFocusable(true);
         int highlightColor = Color.YELLOW;
-        int normalColor = Color.GRAY;
-
-        setMinHeight(110);
+        int normalColor = Color.WHITE;
 
         // Non-highlight part
         mPaint = new Paint();
@@ -127,8 +125,9 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
         if (mLyricIndex > -1) {
             // Current line with highlighted color
-            currY = mMiddleY + DY * drawText(
-                    canvas, mCurrentPaint, arrSentences.get(mLyricIndex).getContent(), mMiddleY + DY - iLoop);
+            int line = drawText(canvas, mCurrentPaint, arrSentences.get(mLyricIndex).getContent(), mMiddleY + DY - iLoop);
+            currY = mMiddleY + DY * line;
+
         } else {
             // First line is not from timestamp 0
             currY = mMiddleY + iLoop;
@@ -168,6 +167,48 @@ public class LyricView extends AppCompatTextView implements Runnable {
 //            currY -= DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY);
 //            // canvas.translate(0, DY);
 //        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int desiredWidth = 100;
+        int desiredHeight = 100;
+
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+        int width;
+        int height;
+
+        //Measure Width
+        if (widthMode == MeasureSpec.EXACTLY) {
+            //Must be this size
+            width = widthSize;
+        } else if (widthMode == MeasureSpec.AT_MOST) {
+            //Can't be bigger than...
+            width = Math.min(desiredWidth, widthSize);
+        } else {
+            //Be whatever you want
+            width = desiredWidth;
+        }
+
+        //Measure Height
+        if (heightMode == MeasureSpec.EXACTLY) {
+            //Must be this size
+            height = heightSize;
+        } else if (heightMode == MeasureSpec.AT_MOST) {
+            //Can't be bigger than...
+            height = Math.min(desiredHeight, heightSize);
+        } else {
+            //Be whatever you want
+            height = desiredHeight;
+        }
+
+        //MUST CALL THIS
+        setMeasuredDimension(width, height);
     }
 
     protected void onSizeChanged(int w, int h, int ow, int oh) {
