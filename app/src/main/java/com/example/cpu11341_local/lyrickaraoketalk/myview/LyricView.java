@@ -5,15 +5,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.example.cpu11341_local.lyrickaraoketalk.LyricUtils;
-import com.example.cpu11341_local.lyrickaraoketalk.R;
+import com.example.cpu11341_local.lyrickaraoketalk.utils.LyricUtils;
 import com.example.cpu11341_local.lyrickaraoketalk.model.Lyric;
 import com.example.cpu11341_local.lyrickaraoketalk.model.Sentence;
 
@@ -37,6 +35,16 @@ public class LyricView extends AppCompatTextView implements Runnable {
     private int mHeight;
     private int iLoop = 0;
     private long delay;
+    private boolean isLooping = false;
+
+    public void setLyricLength(long time){
+        lyric.setLength(time);
+    }
+
+
+    public void setLooping(boolean looping) {
+        isLooping = looping;
+    }
 
     public LyricView(Context context) {
         this(context, null);
@@ -110,7 +118,6 @@ public class LyricView extends AppCompatTextView implements Runnable {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.d("Delay", String.valueOf(delay));
 
         if (iLoop < DY && System.currentTimeMillis() > delay) {
             iLoop++;
@@ -275,7 +282,9 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
     public void repeat(){
         mLyricIndex = 0;
+        mStartTime = System.currentTimeMillis();
     }
+
     private long mStartTime = -1;
     private boolean mStop = true;
     private boolean mIsForeground = true;
@@ -296,8 +305,12 @@ public class LyricView extends AppCompatTextView implements Runnable {
                 iLoop = 0;
                 mNextSentenceTime = updateIndex(ts);
             }
-            if (mNextSentenceTime == -1) {
-                mStop = true;
+            if (ts > lyric.getLength()) {
+                if (isLooping){
+                    repeat();
+                }else {
+                    mStop = true;
+                }
             }
         }
     }

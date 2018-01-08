@@ -5,17 +5,16 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.cpu11341_local.lyrickaraoketalk.myview.LyricView;
+import com.example.cpu11341_local.lyrickaraoketalk.utils.LyricUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -76,10 +75,15 @@ public class MainActivity extends Activity {
         lyricView.setLyric(LyricUtils.parseLyric(
                 getResources().openRawResource(lyricID), "UTF-8"));
         lyricView.setLyricIndex(0);
+        lyricView.setLooping(true);
         lyricView.play();
 
         mp = MediaPlayer.create(getApplicationContext(), mp3ID);// the song is a filename which i have pasted inside a folder **raw** created under the **res** folder.//
+        mp.setLooping(true);
+        lyricView.setLyricLength(mp.getDuration());
         mp.start();
+
+
 
         final Animation playingMusicRotate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
         playingMusic.setVisibility(View.VISIBLE);

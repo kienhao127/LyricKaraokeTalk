@@ -1,4 +1,4 @@
-package com.example.cpu11341_local.lyrickaraoketalk;
+package com.example.cpu11341_local.lyrickaraoketalk.utils;
 
 import android.text.TextUtils;
 import android.util.Log;
