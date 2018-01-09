@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.cpu11341_local.lyrickaraoketalk.adapter.SongListAdapter;
 import com.example.cpu11341_local.lyrickaraoketalk.model.Song;
@@ -18,10 +20,31 @@ public class SongListActivity extends AppCompatActivity {
     SongListAdapter songListAdapter;
     RecyclerView.LayoutManager layoutManager;
     ArrayList<Song> songs;
+    Toolbar toolbar;
+    TextView mTitle;
+
+    void init(){
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mTitle = (TextView) findViewById(R.id.toolbar_title);
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
+        init();
+
+        this.setSupportActionBar(toolbar);
+        mTitle.setText("Danh sách bài hát");
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         songs = new ArrayList<>();
         songs.add(new Song("Năm ấy", "Đức Phúc", R.raw.namay_ducphuc, R.raw.namay));
