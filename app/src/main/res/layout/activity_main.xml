@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity"
     android:background="@drawable/background">
 
@@ -79,4 +80,9 @@
         android:layout_marginTop="80dp"
         android:src="@drawable/playing_music"
         android:visibility="gone"/>
+
+    <com.example.cpu11341_local.lyrickaraoketalk.myview.DonutProgress
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        custom:donut_progress="30"/>
 </RelativeLayout>
