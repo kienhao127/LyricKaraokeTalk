@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.cpu11341_local.lyrickaraoketalk.myview.DonutProgress;
 import com.example.cpu11341_local.lyrickaraoketalk.myview.LyricView;
 import com.example.cpu11341_local.lyrickaraoketalk.utils.LyricUtils;
 
@@ -28,6 +29,7 @@ public class MainActivity extends Activity {
     TextView turnOffMusic;
     TextView onOffLyric;
     Timer timer;
+    DonutProgress donutProgress;
 
     void init(){
         lyricView = (LyricView) findViewById(R.id.lyricView);
@@ -36,6 +38,7 @@ public class MainActivity extends Activity {
         playMusicMenu = (LinearLayout) findViewById(R.id.playMusicMenu);
         turnOffMusic = (TextView) findViewById(R.id.turnOffMusic);
         onOffLyric = (TextView) findViewById(R.id.onOffLyric);
+        donutProgress = (DonutProgress) findViewById(R.id.donutProgress);
     }
 
     @Override
@@ -83,7 +86,9 @@ public class MainActivity extends Activity {
         lyricView.setLyricLength(mp.getDuration());
         mp.start();
 
-
+        donutProgress.setDuration(mp.getDuration());
+        donutProgress.setLooping(true);
+        donutProgress.start();
 
         final Animation playingMusicRotate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
         playingMusic.setVisibility(View.VISIBLE);
@@ -128,6 +133,7 @@ public class MainActivity extends Activity {
                 playingMusic.setVisibility(View.GONE);
                 lyricView.stop();
                 lyricView.setVisibility(View.GONE);
+                donutProgress.stop();
             }
         });
     }

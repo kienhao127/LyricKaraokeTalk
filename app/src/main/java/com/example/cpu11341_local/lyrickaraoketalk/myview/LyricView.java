@@ -111,7 +111,6 @@ public class LyricView extends AppCompatTextView implements Runnable {
             mPaint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText(text, mMiddleX, startY, paint);
         }
-//        Log.d("Line", String.valueOf(line));
         return line;
     }
 
@@ -287,7 +286,6 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
     private long mStartTime = -1;
     private boolean mStop = true;
-    private boolean mIsForeground = true;
     private long mNextSentenceTime = -1;
 
     @Override
@@ -296,16 +294,19 @@ public class LyricView extends AppCompatTextView implements Runnable {
             mStartTime = System.currentTimeMillis();
         }
         while (mLyricIndex != -2) {
+            Log.d("mLyricIndex", String.valueOf(mLyricIndex));
+
             if (mStop) {
                 return;
             }
             long ts = System.currentTimeMillis() - mStartTime;
+            Log.d("mLyricIndex ts", String.valueOf(ts));
             if (ts >= mNextSentenceTime) {
                 delay = System.currentTimeMillis() + 300;
                 iLoop = 0;
                 mNextSentenceTime = updateIndex(ts);
             }
-            if (ts > lyric.getLength()) {
+            if (mNextSentenceTime == -1 && ts > lyric.getLength()) {
                 if (isLooping){
                     repeat();
                 }else {

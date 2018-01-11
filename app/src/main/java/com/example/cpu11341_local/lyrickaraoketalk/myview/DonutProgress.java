@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.example.cpu11341_local.lyrickaraoketalk.R;
@@ -17,7 +18,7 @@ import com.example.cpu11341_local.lyrickaraoketalk.R;
  * Created by CPU11341-local on 10-Jan-18.
  */
 
-public class DonutProgress extends View {
+public class DonutProgress extends View implements Runnable{
     private Paint finishedPaint;
     private Paint unfinishedPaint;
 
@@ -30,12 +31,17 @@ public class DonutProgress extends View {
     private RectF unfinishedOuterRect = new RectF();
 
     private final float default_stroke_width;
-    private final int default_finished_color = Color.rgb(66, 145, 241);
+    private final int default_finished_color = Color.YELLOW;
     private final int default_unfinished_color = Color.rgb(204, 204, 204);
 
     private float progress = 0;
     private int max = 100;
-    private int startingDegree = 0;
+    private int startingDegree = 270;
+
+    private int duration;
+    private long startTime = -1;
+    private boolean mStop = false;
+    private boolean isLooping = false;
 
     public DonutProgress(Context context) {
         this(context, null);
@@ -48,7 +54,7 @@ public class DonutProgress extends View {
     public DonutProgress(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        default_stroke_width = dp2px(getResources(), 5);
+        default_stroke_width = dp2px(getResources(), 3);
 
         final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.DonutProgress, defStyleAttr, 0);
         initByAttributes(attributes);
@@ -92,7 +98,6 @@ public class DonutProgress extends View {
 
     public void setFinishedStrokeWidth(float finishedStrokeWidth) {
         this.finishedStrokeWidth = finishedStrokeWidth;
-        this.invalidate();
     }
 
     public float getUnfinishedStrokeWidth() {
@@ -101,7 +106,6 @@ public class DonutProgress extends View {
 
     public void setUnfinishedStrokeWidth(float unfinishedStrokeWidth) {
         this.unfinishedStrokeWidth = unfinishedStrokeWidth;
-        this.invalidate();
     }
 
     private float getProgressAngle() {
@@ -117,7 +121,6 @@ public class DonutProgress extends View {
         if (this.progress > getMax()) {
             this.progress %= getMax();
         }
-        invalidate();
     }
 
     public int getMax() {
@@ -127,7 +130,6 @@ public class DonutProgress extends View {
     public void setMax(int max) {
         if (max > 0) {
             this.max = max;
-            invalidate();
         }
     }
 
@@ -137,7 +139,6 @@ public class DonutProgress extends View {
 
     public void setFinishedStrokeColor(int finishedStrokeColor) {
         this.finishedStrokeColor = finishedStrokeColor;
-        this.invalidate();
     }
 
     public int getUnfinishedStrokeColor() {
@@ -146,7 +147,6 @@ public class DonutProgress extends View {
 
     public void setUnfinishedStrokeColor(int unfinishedStrokeColor) {
         this.unfinishedStrokeColor = unfinishedStrokeColor;
-        this.invalidate();
     }
 
     public int getStartingDegree() {
@@ -155,7 +155,61 @@ public class DonutProgress extends View {
 
     public void setStartingDegree(int startingDegree) {
         this.startingDegree = startingDegree;
-        this.invalidate();
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void start(){
+        mStop = false;
+        Thread thread = new Thread(this);
+        thread.start();
+    }
+
+    public void stop(){
+        mStop = true;
+    }
+
+    public void setLooping(boolean looping) {
+        isLooping = looping;
+    }
+
+    public boolean isLooping() {
+        return isLooping;
+    }
+
+    private void repeat() {
+        setProgress(0);
+        startTime = System.currentTimeMillis();
+    }
+
+
+    @Override
+    public void run() {
+        if (startTime == -1){
+            startTime = System.currentTimeMillis();
+        }
+
+        long ts = System.currentTimeMillis() - startTime;
+        while(true){
+            if (mStop){
+                return;
+            }
+            setProgress(ts*100/duration);
+            ts = System.currentTimeMillis() - startTime;
+            if (ts > duration) {
+                if (isLooping){
+                    repeat();
+                }else {
+                    mStop = true;
+                }
+            }
+        }
     }
 
     @Override
@@ -174,5 +228,7 @@ public class DonutProgress extends View {
 
         canvas.drawArc(finishedOuterRect, getStartingDegree(), getProgressAngle(), false, finishedPaint);
         canvas.drawArc(unfinishedOuterRect, getStartingDegree() + getProgressAngle(), 360 - getProgressAngle(), false, unfinishedPaint);
+
+        invalidate();
     }
 }
