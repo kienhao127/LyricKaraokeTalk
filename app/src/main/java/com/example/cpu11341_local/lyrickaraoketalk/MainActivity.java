@@ -86,6 +86,7 @@ public class MainActivity extends Activity {
         lyricView.setLyricLength(mp.getDuration());
         mp.start();
 
+        donutProgress.setVisibility(View.VISIBLE);
         donutProgress.setDuration(mp.getDuration());
         donutProgress.setLooping(true);
         donutProgress.start();
@@ -134,6 +135,7 @@ public class MainActivity extends Activity {
                 lyricView.stop();
                 lyricView.setVisibility(View.GONE);
                 donutProgress.stop();
+                donutProgress.setVisibility(View.GONE);
             }
         });
     }

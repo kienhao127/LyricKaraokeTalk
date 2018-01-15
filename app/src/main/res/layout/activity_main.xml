@@ -78,7 +78,8 @@
         android:layout_alignLeft="@+id/karaBtn"
         android:layout_alignStart="@+id/karaBtn"
         android:layout_marginTop="80dp"
-        android:src="@drawable/playing_music"/>
+        android:src="@drawable/playing_music"
+        android:visibility="gone"/>
 
     <com.example.cpu11341_local.lyrickaraoketalk.myview.DonutProgress
         android:id="@+id/donutProgress"
@@ -89,5 +90,6 @@
         android:layout_alignLeft="@+id/playingMusic"
         android:layout_alignRight="@+id/playingMusic"
         android:layout_alignStart="@+id/playingMusic"
-        android:layout_alignTop="@+id/playingMusic" />
+        android:layout_alignTop="@+id/playingMusic"
+        android:visibility="gone"/>
 </RelativeLayout>
