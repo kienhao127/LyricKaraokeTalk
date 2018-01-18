@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class LyricView extends AppCompatTextView implements Runnable {
     Lyric lyric;
 
-    private static final int DY = 50;
+    private int DY = 50;
 
     private Paint mCurrentPaint;
     private Paint mPaint;
@@ -75,6 +75,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
         mPaint.setTextAlign(Paint.Align.CENTER);
         mCurrentPaint.setTextAlign(Paint.Align.CENTER);
 
+        setMinHeight(200);
     }
 
     private int drawText(Canvas canvas, Paint paint, String text, float startY) {
@@ -102,9 +103,9 @@ public class LyricView extends AppCompatTextView implements Runnable {
             for (String str : lines) {
                 ++line;
                 if (startY < mMiddleY)
-                    canvas.drawText(str, mMiddleX, startY - (linesLength - line) * DY, paint);
+                    canvas.drawText(str, mMiddleX, startY - (linesLength - line) * 50, paint);
                 else
-                    canvas.drawText(str, mMiddleX, startY + (line - 1) * DY, paint);
+                    canvas.drawText(str, mMiddleX, startY + (line - 1) * 50, paint);
             }
         } else {
             ++line;
@@ -118,6 +119,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        canvas.drawColor(Color.BLUE);
         if (iLoop < DY && System.currentTimeMillis() > delay) {
             iLoop++;
         }
@@ -135,7 +137,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
         if (mLyricIndex > -1) {
             // Current line with highlighted color
             int line = drawText(canvas, mCurrentPaint, arrSentences.get(mLyricIndex).getContent(), mMiddleY + DY - iLoop);
-            currY = mMiddleY + DY * line;
+            currY = mMiddleY + 50 * line;
 
         } else {
             // First line is not from timestamp 0
@@ -143,88 +145,28 @@ public class LyricView extends AppCompatTextView implements Runnable {
         }
 
         // Draw sentences afterwards
+        currY += 50;
         int i = mLyricIndex + 1;
         if (i < mLyricSentenceLength) {
-            currY += DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY + DY - iLoop);
+            int line = drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY + 50 - iLoop);
+//            setHeight(10 + line*50);
         }
 
         currY = mMiddleY - DY;
         // Draw sentences before current one
         i = mLyricIndex - 1;
         if (i >= 0) {
-            currY -= DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY + DY - iLoop);
+            int line = drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY + DY - iLoop);
+            DY = line * 50;
         }
         invalidate();
-
-//        int size = arrSentences.size();
-//        for (int i = mLyricIndex + 1; i < size; i++) {
-//            if (currY > mHeight) {
-//                break;
-//            }
-//            // Draw and Move down
-//            currY += DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY);
-//        }
-
-//        currY = mMiddleY - DY;
-//
-//        // Draw sentences before current one
-//        for (int i = mLyricIndex - 1; i >= 0; i--) {
-//            if (currY < 0) {
-//                break;
-//            }
-//            // Draw and move upwards
-//            currY -= DY * drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY);
-//            // canvas.translate(0, DY);
-//        }
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int desiredWidth = 100;
-        int desiredHeight = 100;
-
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-
-        int width;
-        int height;
-
-        //Measure Width
-        if (widthMode == MeasureSpec.EXACTLY) {
-            //Must be this size
-            width = widthSize;
-        } else if (widthMode == MeasureSpec.AT_MOST) {
-            //Can't be bigger than...
-            width = Math.min(desiredWidth, widthSize);
-        } else {
-            //Be whatever you want
-            width = desiredWidth;
-        }
-
-        //Measure Height
-        if (heightMode == MeasureSpec.EXACTLY) {
-            //Must be this size
-            height = heightSize;
-        } else if (heightMode == MeasureSpec.AT_MOST) {
-            //Can't be bigger than...
-            height = Math.min(desiredHeight, heightSize);
-        } else {
-            //Be whatever you want
-            height = desiredHeight;
-        }
-
-        //MUST CALL THIS
-        setMeasuredDimension(width, height);
     }
 
     protected void onSizeChanged(int w, int h, int ow, int oh) {
         super.onSizeChanged(w, h, ow, oh);
         mMiddleX = w * 0.5f; // remember the center of the screen
         mHeight = h;
-        mMiddleY = h * 0.35f;
+        mMiddleY = 40;
     }
 
     public long updateIndex(long time) {
