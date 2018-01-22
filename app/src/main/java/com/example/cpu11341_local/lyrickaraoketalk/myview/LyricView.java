@@ -24,7 +24,8 @@ import java.util.ArrayList;
 public class LyricView extends AppCompatTextView implements Runnable {
     Lyric lyric;
 
-    private int DY = 50;
+    private static final int DY = 50;
+    private int scrollDistance = 50;
 
     private Paint mCurrentPaint;
     private Paint mPaint;
@@ -36,6 +37,9 @@ public class LyricView extends AppCompatTextView implements Runnable {
     private int iLoop = 0;
     private long delay;
     private boolean isLooping = false;
+
+    private float beforePos;
+    private float afterPos;
 
     public void setLyricLength(long time){
         lyric.setLength(time);
@@ -75,12 +79,11 @@ public class LyricView extends AppCompatTextView implements Runnable {
         mPaint.setTextAlign(Paint.Align.CENTER);
         mCurrentPaint.setTextAlign(Paint.Align.CENTER);
 
-        setMinHeight(200);
+        setMinHeight(100);
     }
 
     private int drawText(Canvas canvas, Paint paint, String text, float startY) {
         int line = 0;
-        Log.d(String.valueOf(mLyricIndex), text);
         float textWidth = paint.measureText(text);
         final int width = getWidth() - 85;
         if (textWidth > width) {
@@ -102,10 +105,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
             int linesLength = lines.size();
             for (String str : lines) {
                 ++line;
-                if (startY < mMiddleY)
-                    canvas.drawText(str, mMiddleX, startY - (linesLength - line) * 50, paint);
-                else
-                    canvas.drawText(str, mMiddleX, startY + (line - 1) * 50, paint);
+                canvas.drawText(str, mMiddleX, startY + (line - 1) * DY, paint);
             }
         } else {
             ++line;
@@ -119,8 +119,9 @@ public class LyricView extends AppCompatTextView implements Runnable {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawColor(Color.BLUE);
-        if (iLoop < DY && System.currentTimeMillis() > delay) {
+        int totalLine = 0;
+
+        if (iLoop < scrollDistance && System.currentTimeMillis() > delay) {
             iLoop++;
         }
         if (lyric == null) {
@@ -132,33 +133,36 @@ public class LyricView extends AppCompatTextView implements Runnable {
             return;
         }
 
-        float currY;
+        // Draw sentences before current one
+        int i = mLyricIndex - 1;
+        if (i >= 0) {
+            int line = drawText(canvas, mPaint, arrSentences.get(i).getContent(), mMiddleY - iLoop);
+            scrollDistance = line * DY;
+        }
 
         if (mLyricIndex > -1) {
             // Current line with highlighted color
-            int line = drawText(canvas, mCurrentPaint, arrSentences.get(mLyricIndex).getContent(), mMiddleY + DY - iLoop);
-            currY = mMiddleY + 50 * line;
-
-        } else {
-            // First line is not from timestamp 0
-            currY = mMiddleY + iLoop;
+            int line = drawText(canvas, mCurrentPaint, arrSentences.get(mLyricIndex).getContent(), mMiddleY + scrollDistance - iLoop);
+            afterPos = mMiddleY + DY * line;
+            totalLine += line;
         }
 
         // Draw sentences afterwards
-        currY += 50;
-        int i = mLyricIndex + 1;
-        if (i < mLyricSentenceLength) {
-            int line = drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY + 50 - iLoop);
-//            setHeight(10 + line*50);
+        i = mLyricIndex + 1;
+        if (i > 0 && i < mLyricSentenceLength) {
+            int line = drawText(canvas, mPaint, arrSentences.get(i).getContent(), afterPos + scrollDistance - iLoop);
+            totalLine += line;
+            int newHeight = totalLine*DY;
+            if (getHeight() > newHeight){
+                if (iLoop == scrollDistance){
+                    setHeight(newHeight);
+                }
+            } else {
+                setHeight(newHeight);
+            }
         }
 
-        currY = mMiddleY - DY;
-        // Draw sentences before current one
-        i = mLyricIndex - 1;
-        if (i >= 0) {
-            int line = drawText(canvas, mPaint, arrSentences.get(i).getContent(), currY + DY - iLoop);
-            DY = line * 50;
-        }
+
         invalidate();
     }
 
@@ -236,13 +240,10 @@ public class LyricView extends AppCompatTextView implements Runnable {
             mStartTime = System.currentTimeMillis();
         }
         while (mLyricIndex != -2) {
-            Log.d("mLyricIndex", String.valueOf(mLyricIndex));
-
             if (mStop) {
                 return;
             }
             long ts = System.currentTimeMillis() - mStartTime;
-            Log.d("mLyricIndex ts", String.valueOf(ts));
             if (ts >= mNextSentenceTime) {
                 delay = System.currentTimeMillis() + 300;
                 iLoop = 0;
