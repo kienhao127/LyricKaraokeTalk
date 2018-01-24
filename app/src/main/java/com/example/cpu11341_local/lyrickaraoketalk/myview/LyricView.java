@@ -86,31 +86,24 @@ public class LyricView extends AppCompatTextView implements Runnable {
         int line = 0;
         float textWidth = paint.measureText(text);
         final int width = getWidth() - 85;
-        if (textWidth > width) {
+        
+        while (textWidth != 0){
             int length = text.length();
             int startIndex = 0;
-            int endIndex = text.indexOf(" ", (int) (text.length()/3*2));
-            if (endIndex == -1){
-                endIndex = Math.min((int) ((float) length * (width / textWidth)), length - 1);
+            int endIndex;
+            if (textWidth < width){
+                endIndex = length;
+            } else {
+                endIndex = text.lastIndexOf(" ", (int) ((float) length * (width / textWidth)));
             }
-            int perLineLength = endIndex - startIndex;
 
-            ArrayList<String> lines = new ArrayList<>();
-            lines.add(text.substring(startIndex, endIndex));
-            while (endIndex < length - 1) {
-                startIndex = endIndex;
-                endIndex = Math.min(startIndex + perLineLength, length);
-                lines.add(text.substring(startIndex, endIndex));
-            }
-            int linesLength = lines.size();
-            for (String str : lines) {
-                ++line;
-                canvas.drawText(str, mMiddleX, startY + (line - 1) * DY, paint);
-            }
-        } else {
+            String newText = (text.substring(startIndex, endIndex));
+
+            text = text.substring(endIndex);
+            textWidth = paint.measureText(text);
+
             ++line;
-            mPaint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText(text, mMiddleX, startY, paint);
+            canvas.drawText(newText, mMiddleX, startY + (line - 1) * DY, paint);
         }
         return line;
     }

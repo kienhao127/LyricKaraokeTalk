@@ -20,7 +20,7 @@
 
     <com.example.cpu11341_local.lyrickaraoketalk.myview.LyricView
         android:id="@+id/lyricView"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
