@@ -12,4 +12,11 @@
 
         <attr name="donut_circle_starting_degree" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="LyricView">
+        <attr name="highlightColor" format="color"/>
+        <attr name="normalColor" format="color"/>
+
+        <attr name="lyricTextSize" format="dimension"/>
+    </declare-styleable>
 </resources>

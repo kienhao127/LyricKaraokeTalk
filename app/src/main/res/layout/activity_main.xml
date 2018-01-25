@@ -24,8 +24,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/playMusicMenu"
-        android:background="#00000000" />
+        android:layout_below="@+id/playingMusic"
+        android:background="#00000000"
+        custom:highlightColor="#FFFF00"
+        custom:normalColor="#FFFFFF"
+        custom:lyricTextSize="18dp"/>
 
 
     <LinearLayout

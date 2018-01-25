@@ -1,6 +1,7 @@
 package com.example.cpu11341_local.lyrickaraoketalk.myview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.example.cpu11341_local.lyrickaraoketalk.R;
 import com.example.cpu11341_local.lyrickaraoketalk.utils.LyricUtils;
 import com.example.cpu11341_local.lyrickaraoketalk.model.Lyric;
 import com.example.cpu11341_local.lyrickaraoketalk.model.Sentence;
@@ -38,9 +40,11 @@ public class LyricView extends AppCompatTextView implements Runnable {
     private long delay;
     private boolean isLooping = false;
 
-    private float beforePos;
     private float afterPos;
 
+    private int highlightColor = Color.YELLOW;
+    private int normalColor = Color.WHITE;
+    private float lyricTextSize = 36;
     public void setLyricLength(long time){
         lyric.setLength(time);
     }
@@ -61,19 +65,21 @@ public class LyricView extends AppCompatTextView implements Runnable {
     public LyricView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setFocusable(true);
-        int highlightColor = Color.YELLOW;
-        int normalColor = Color.WHITE;
+
+        final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.LyricView, defStyleAttr, 0);
+        initByAttributes(attributes);
+        attributes.recycle();
 
         // Non-highlight part
         mPaint = new Paint();
-        mPaint.setTextSize(36);
+        mPaint.setTextSize(lyricTextSize);
         mPaint.setColor(normalColor);
         mPaint.setTypeface(Typeface.SERIF);
 
         // highlight part, current lyric
         mCurrentPaint = new Paint();
         mCurrentPaint.setColor(highlightColor);
-        mCurrentPaint.setTextSize(36);
+        mCurrentPaint.setTextSize(lyricTextSize);
         mCurrentPaint.setTypeface(Typeface.create(Typeface.SERIF, Typeface.BOLD));
 
         mPaint.setTextAlign(Paint.Align.CENTER);
@@ -82,11 +88,18 @@ public class LyricView extends AppCompatTextView implements Runnable {
         setMinHeight(100);
     }
 
+    protected void initByAttributes(TypedArray attributes) {
+        highlightColor = attributes.getColor(R.styleable.LyricView_highlightColor, Color.YELLOW);
+        normalColor = attributes.getColor(R.styleable.LyricView_normalColor, Color.WHITE);
+
+        lyricTextSize = attributes.getDimension(R.styleable.LyricView_lyricTextSize, 36);
+    }
+
     private int drawText(Canvas canvas, Paint paint, String text, float startY) {
         int line = 0;
         float textWidth = paint.measureText(text);
         final int width = getWidth() - 85;
-        
+
         while (textWidth != 0){
             int length = text.length();
             int startIndex = 0;
