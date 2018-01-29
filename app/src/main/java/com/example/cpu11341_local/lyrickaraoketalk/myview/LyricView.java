@@ -97,7 +97,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
     private int drawText(Canvas canvas, Paint paint, String text, float startY) {
         int line = 0;
-        float textWidth = paint.measureText(text);
+        float textWidth = mCurrentPaint.measureText(text);
         final int width = getWidth() - 85;
 
         while (textWidth != 0){
@@ -113,7 +113,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
             String newText = (text.substring(startIndex, endIndex));
 
             text = text.substring(endIndex);
-            textWidth = paint.measureText(text);
+            textWidth = mCurrentPaint.measureText(text);
 
             ++line;
             canvas.drawText(newText, mMiddleX, startY + (line - 1) * DY, paint);
