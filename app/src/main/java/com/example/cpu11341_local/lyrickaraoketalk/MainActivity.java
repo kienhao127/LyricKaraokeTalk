@@ -1,6 +1,7 @@
 package com.example.cpu11341_local.lyrickaraoketalk;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
@@ -34,10 +35,10 @@ public class MainActivity extends Activity {
     void init(){
         lyricView = (LyricView) findViewById(R.id.lyricView);
         karaBtn = (ImageView) findViewById(R.id.karaBtn);
-        playingMusic = (ImageView) findViewById(R.id.playingMusic);
-        playMusicMenu = (LinearLayout) findViewById(R.id.playMusicMenu);
-        turnOffMusic = (TextView) findViewById(R.id.turnOffMusic);
-        onOffLyric = (TextView) findViewById(R.id.onOffLyric);
+//        playingMusic = (ImageView) findViewById(R.id.playingMusic);
+//        playMusicMenu = (LinearLayout) findViewById(R.id.playMusicMenu);
+//        turnOffMusic = (TextView) findViewById(R.id.turnOffMusic);
+//        onOffLyric = (TextView) findViewById(R.id.onOffLyric);
         donutProgress = (DonutProgress) findViewById(R.id.donutProgress);
     }
 
@@ -65,7 +66,7 @@ public class MainActivity extends Activity {
 
             if (mp3ID != null && lyricID != null) {
                 try {
-                    onMusicPlaying(lyricID, mp3ID);
+                    onMusicPlaying(lyricID, mp3ID, getApplicationContext());
                 }catch (Resources.NotFoundException e){
 
                 }
@@ -74,7 +75,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void onMusicPlaying(int lyricID, int mp3ID){
+    private void onMusicPlaying(int lyricID, int mp3ID, Context context){
         lyricView.setLyric(LyricUtils.parseLyric(
                 getResources().openRawResource(lyricID), "UTF-8"));
         lyricView.setLyricIndex(0);
@@ -86,58 +87,76 @@ public class MainActivity extends Activity {
         lyricView.setLyricLength(mp.getDuration());
         mp.start();
 
+        donutProgress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (donutProgress.getBackground().getConstantState() == getResources().getDrawable(R.drawable.play).getConstantState()){
+                    lyricView.play();
+                    mp.start();
+                    donutProgress.start();
+                    donutProgress.setBackgroundResource(R.drawable.stop);
+                } else {
+                    lyricView.stop();
+                    mp.seekTo(0);
+                    mp.pause();
+                    donutProgress.stop();
+                    donutProgress.setBackgroundResource(R.drawable.play);
+                }
+            }
+        });
+
         donutProgress.setVisibility(View.VISIBLE);
         donutProgress.setDuration(mp.getDuration());
         donutProgress.setLooping(true);
         donutProgress.start();
 
-        final Animation playingMusicRotate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
-        playingMusic.setVisibility(View.VISIBLE);
-        playingMusic.startAnimation(playingMusicRotate);
-        playingMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (playMusicMenu.getVisibility() == View.VISIBLE){
-
-                } else {
-                    Animation showMenu = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale);
-                    playMusicMenu.setVisibility(View.VISIBLE);
-                    playMusicMenu.startAnimation(showMenu);
-                    autoCloseMenu();
-                }
-            }
-        });
-
-        onOffLyric.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (lyricView.getVisibility() == View.VISIBLE){
-                    lyricView.setVisibility(View.GONE);
-                    onOffLyric.setText("Bật lời");
-                } else {
-                    lyricView.setVisibility(View.VISIBLE);
-                    onOffLyric.setText("Tắt lời");
-                }
-                if (timer != null) {
-                    timer.cancel();
-                    autoCloseMenu();
-                }
-            }
-        });
-
-        turnOffMusic.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                mp.stop();
-                playMusicMenu.setVisibility(View.GONE);
-                playingMusic.clearAnimation();
-                playingMusic.setVisibility(View.GONE);
-                lyricView.stop();
-                lyricView.setVisibility(View.GONE);
-                donutProgress.stop();
-                donutProgress.setVisibility(View.GONE);
-            }
-        });
+//        final Animation playingMusicRotate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
+//        playingMusic.setVisibility(View.VISIBLE);
+//        playingMusic.startAnimation(playingMusicRotate);
+//        playingMusic.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (playMusicMenu.getVisibility() == View.VISIBLE){
+//
+//                } else {
+//                    Animation showMenu = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale);
+//                    playMusicMenu.setVisibility(View.VISIBLE);
+//                    playMusicMenu.startAnimation(showMenu);
+//                    autoCloseMenu();
+//                }
+//            }
+//        });
+//
+//        onOffLyric.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (lyricView.getVisibility() == View.VISIBLE){
+//                    lyricView.setVisibility(View.GONE);
+//                    onOffLyric.setText("Bật lời");
+//                } else {
+//                    lyricView.setVisibility(View.VISIBLE);
+//                    onOffLyric.setText("Tắt lời");
+//                }
+//                if (timer != null) {
+//                    timer.cancel();
+//                    autoCloseMenu();
+//                }
+//            }
+//        });
+//
+//        turnOffMusic.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                mp.stop();
+//                playMusicMenu.setVisibility(View.GONE);
+//                playingMusic.clearAnimation();
+//                playingMusic.setVisibility(View.GONE);
+//                lyricView.stop();
+//                lyricView.setVisibility(View.GONE);
+//                donutProgress.stop();
+//                donutProgress.setVisibility(View.GONE);
+//            }
+//        });
     }
 
     private void autoCloseMenu(){

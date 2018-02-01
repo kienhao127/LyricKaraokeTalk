@@ -229,6 +229,8 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
     public void stop() {
         mStop = true;
+        mLyricIndex = 0;
+        mStartTime = -1;
     }
 
     public void repeat(){

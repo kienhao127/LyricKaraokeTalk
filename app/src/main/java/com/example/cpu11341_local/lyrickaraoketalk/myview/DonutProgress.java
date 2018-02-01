@@ -173,6 +173,8 @@ public class DonutProgress extends View implements Runnable{
 
     public void stop(){
         mStop = true;
+        setProgress(0);
+        startTime = -1;
     }
 
     public void setLooping(boolean looping) {
