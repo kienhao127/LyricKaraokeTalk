@@ -127,7 +127,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
         int totalLine = 0;
 
-        if (iLoop < scrollDistance && System.currentTimeMillis() > delay) {
+        if (iLoop < scrollDistance && System.currentTimeMillis() > delay && !mStop) {
             iLoop++;
         }
         if (lyric == null) {
@@ -142,12 +142,13 @@ public class LyricView extends AppCompatTextView implements Runnable {
         // Draw sentences before current one
         int i = mLyricIndex - 1;
         if (i >= 0) {
-            int line = drawText(canvas, mPaint, arrSentences.get(i).getContent(), mMiddleY - iLoop);
+            int line = drawText(canvas, mCurrentPaint, arrSentences.get(i).getContent(), mMiddleY - iLoop);
             scrollDistance = line * DY;
         }
 
         if (mLyricIndex > -1) {
             // Current line with highlighted color
+//            mMovingPaint.setTextSize(movingLyricTextSize);
             int line = drawText(canvas, mCurrentPaint, arrSentences.get(mLyricIndex).getContent(), mMiddleY + scrollDistance - iLoop);
             afterPos = mMiddleY + DY * line;
             totalLine += line;
@@ -155,8 +156,8 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
         // Draw sentences afterwards
         i = mLyricIndex + 1;
-        if (i > 0 && i < mLyricSentenceLength) {
-            int line = drawText(canvas, mPaint, arrSentences.get(i).getContent(), afterPos + scrollDistance - iLoop);
+        if (i > 0 && i < mLyricSentenceLength && iLoop == scrollDistance) {
+            int line = drawText(canvas, mPaint, arrSentences.get(i).getContent(), afterPos);
             totalLine += line;
             int newHeight = totalLine*DY;
             if (getHeight() > newHeight){
@@ -231,6 +232,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
         mStop = true;
         mLyricIndex = 0;
         mStartTime = -1;
+        mNextSentenceTime = -1;
     }
 
     public void repeat(){
@@ -245,6 +247,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
     @Override
     public void run() {
         if (mStartTime == -1) {
+            Log.d("Lyric index", String.valueOf(mLyricIndex));
             mStartTime = System.currentTimeMillis();
         }
         while (mLyricIndex != -2) {
@@ -253,7 +256,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
             }
             long ts = System.currentTimeMillis() - mStartTime;
             if (ts >= mNextSentenceTime) {
-                delay = System.currentTimeMillis() + 300;
+                delay = System.currentTimeMillis() + 200;
                 iLoop = 0;
                 mNextSentenceTime = updateIndex(ts);
             }
