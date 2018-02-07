@@ -18,6 +18,8 @@ import com.example.cpu11341_local.lyrickaraoketalk.myview.DonutProgress;
 import com.example.cpu11341_local.lyrickaraoketalk.myview.LyricView;
 import com.example.cpu11341_local.lyrickaraoketalk.utils.LyricUtils;
 
+import org.w3c.dom.Text;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,14 +33,12 @@ public class MainActivity extends Activity {
     TextView onOffLyric;
     Timer timer;
     DonutProgress donutProgress;
+    TextView lyricTimer;
 
     void init(){
         lyricView = (LyricView) findViewById(R.id.lyricView);
         karaBtn = (ImageView) findViewById(R.id.karaBtn);
-//        playingMusic = (ImageView) findViewById(R.id.playingMusic);
-//        playMusicMenu = (LinearLayout) findViewById(R.id.playMusicMenu);
-//        turnOffMusic = (TextView) findViewById(R.id.turnOffMusic);
-//        onOffLyric = (TextView) findViewById(R.id.onOffLyric);
+        lyricTimer = (TextView) findViewById(R.id.lyricTimer);
         donutProgress = (DonutProgress) findViewById(R.id.donutProgress);
     }
 
@@ -110,68 +110,7 @@ public class MainActivity extends Activity {
         donutProgress.setLooping(true);
         donutProgress.start();
 
-//        final Animation playingMusicRotate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
-//        playingMusic.setVisibility(View.VISIBLE);
-//        playingMusic.startAnimation(playingMusicRotate);
-//        playingMusic.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (playMusicMenu.getVisibility() == View.VISIBLE){
-//
-//                } else {
-//                    Animation showMenu = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale);
-//                    playMusicMenu.setVisibility(View.VISIBLE);
-//                    playMusicMenu.startAnimation(showMenu);
-//                    autoCloseMenu();
-//                }
-//            }
-//        });
-//
-//        onOffLyric.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (lyricView.getVisibility() == View.VISIBLE){
-//                    lyricView.setVisibility(View.GONE);
-//                    onOffLyric.setText("Bật lời");
-//                } else {
-//                    lyricView.setVisibility(View.VISIBLE);
-//                    onOffLyric.setText("Tắt lời");
-//                }
-//                if (timer != null) {
-//                    timer.cancel();
-//                    autoCloseMenu();
-//                }
-//            }
-//        });
-//
-//        turnOffMusic.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
-//                mp.stop();
-//                playMusicMenu.setVisibility(View.GONE);
-//                playingMusic.clearAnimation();
-//                playingMusic.setVisibility(View.GONE);
-//                lyricView.stop();
-//                lyricView.setVisibility(View.GONE);
-//                donutProgress.stop();
-//                donutProgress.setVisibility(View.GONE);
-//            }
-//        });
-    }
-
-    private void autoCloseMenu(){
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new TimerTask() {
-                    @Override
-                    public void run() {
-                        playMusicMenu.setVisibility(View.GONE);
-                    }
-                });
-            }
-        }, 5000);
+        lyricTimer.setText(parseMStoTimer(mp.getDuration()));
     }
 
     @Override
@@ -181,6 +120,11 @@ public class MainActivity extends Activity {
             mp.release();
         }
         super.onDestroy();
+    }
 
+    private String parseMStoTimer(long ms){
+        int seconds = (int) ((ms / 1000) % 60);
+        int minutes = (int) ((ms / 1000) / 60);
+        return minutes + ":" + seconds;
     }
 }

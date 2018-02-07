@@ -224,6 +224,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
 
     public void play() {
         mStop = false;
+        mStartTime = -1;
         Thread thread = new Thread(this);
         thread.start();
     }
@@ -231,7 +232,7 @@ public class LyricView extends AppCompatTextView implements Runnable {
     public void stop() {
         mStop = true;
         mLyricIndex = 0;
-        mStartTime = -1;
+        mStartTime = -2;
         mNextSentenceTime = -1;
     }
 
@@ -247,13 +248,13 @@ public class LyricView extends AppCompatTextView implements Runnable {
     @Override
     public void run() {
         if (mStartTime == -1) {
-            Log.d("Lyric index", String.valueOf(mLyricIndex));
             mStartTime = System.currentTimeMillis();
         }
         while (mLyricIndex != -2) {
             if (mStop) {
                 return;
             }
+
             long ts = System.currentTimeMillis() - mStartTime;
             if (ts >= mNextSentenceTime) {
                 delay = System.currentTimeMillis() + 200;
