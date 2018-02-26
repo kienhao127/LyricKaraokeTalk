@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -20,6 +21,7 @@ import com.example.cpu11341_local.lyrickaraoketalk.utils.LyricUtils;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,11 +29,7 @@ public class MainActivity extends Activity {
     private LyricView lyricView;
     ImageView karaBtn;
     MediaPlayer mp;
-    ImageView playingMusic;
-    LinearLayout playMusicMenu;
-    TextView turnOffMusic;
-    TextView onOffLyric;
-    Timer timer;
+    CountDownTimer countDownTimer;
     DonutProgress donutProgress;
     TextView lyricTimer;
 
@@ -82,10 +80,24 @@ public class MainActivity extends Activity {
         lyricView.setLooping(true);
         lyricView.play();
 
+        lyricTimer.setVisibility(View.VISIBLE);
+
         mp = MediaPlayer.create(getApplicationContext(), mp3ID);// the song is a filename which i have pasted inside a folder **raw** created under the **res** folder.//
         mp.setLooping(true);
         lyricView.setLyricLength(mp.getDuration());
         mp.start();
+
+        countDownTimer = new CountDownTimer(mp.getDuration(), 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
+                lyricTimer.setText(simpleDateFormat.format(millisUntilFinished));
+            }
+
+            public void onFinish() {
+                lyricTimer.setText("00:00");
+            }
+        }.start();
 
         donutProgress.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,12 +107,14 @@ public class MainActivity extends Activity {
                     mp.start();
                     donutProgress.start();
                     donutProgress.setBackgroundResource(R.drawable.stop);
+                    countDownTimer.start();
                 } else {
                     lyricView.stop();
                     mp.seekTo(0);
                     mp.pause();
                     donutProgress.stop();
                     donutProgress.setBackgroundResource(R.drawable.play);
+                    countDownTimer.cancel();
                 }
             }
         });
@@ -109,8 +123,6 @@ public class MainActivity extends Activity {
         donutProgress.setDuration(mp.getDuration());
         donutProgress.setLooping(true);
         donutProgress.start();
-
-        lyricTimer.setText(parseMStoTimer(mp.getDuration()));
     }
 
     @Override
@@ -120,11 +132,5 @@ public class MainActivity extends Activity {
             mp.release();
         }
         super.onDestroy();
-    }
-
-    private String parseMStoTimer(long ms){
-        int seconds = (int) ((ms / 1000) % 60);
-        int minutes = (int) ((ms / 1000) / 60);
-        return minutes + ":" + seconds;
     }
 }
