@@ -33,27 +33,14 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case 0:{
-                return new SearchBoxHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.search_box,parent,false));
-            }
-            default:{
-                return new SongItemHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.song_item,parent,false));
-            }
-        }
+        return new SongItemHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.song_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        switch (holder.getItemViewType()) {
-            case 0:
-                break;
-            default:
-                SongItemHolder songItemHolder = (SongItemHolder) holder;
-                songItemHolder.artistName.setText(songs.get(position - 1).getArtist());
-                songItemHolder.songName.setText(songs.get(position - 1).getName());
-                break;
-        }
+        SongItemHolder songItemHolder = (SongItemHolder) holder;
+        songItemHolder.artistName.setText(songs.get(position).getArtist());
+        songItemHolder.songName.setText(songs.get(position).getName());
     }
 
     public interface OnItemClickListener {
@@ -66,40 +53,7 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return songs.size() + 1;
-    }
-
-    public class SearchBoxHolder extends RecyclerView.ViewHolder {
-        EditText searchBox;
-        TextView title;
-
-        public SearchBoxHolder(View view){
-            super(view);
-            searchBox = (EditText) view.findViewById(R.id.searchBox);
-            title = (TextView) view.findViewById(R.id.titleItem);
-
-            searchBox.clearFocus();
-            searchBox.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (searchBox.getText().toString().trim().length() > 0){
-                        title.setText("Kết quả tìm kiếm");
-                    } else {
-                        title.setText("Bài hát đề cử");
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
-        }
+        return songs.size();
     }
 
     public class SongItemHolder extends RecyclerView.ViewHolder {
@@ -119,5 +73,9 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             });
         }
+    }
+
+    public void setSongs(ArrayList<Song> songs){
+        this.songs = songs;
     }
 }
