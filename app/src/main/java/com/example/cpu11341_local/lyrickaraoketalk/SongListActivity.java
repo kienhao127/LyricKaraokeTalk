@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -57,9 +58,9 @@ public class SongListActivity extends AppCompatActivity {
         });
 
         songs = new ArrayList<>();
-        songs.add(new Song("Năm ấy", "Đức Phúc", R.raw.namay_ducphuc, R.raw.namay));
-        songs.add(new Song("All Falls Down", "Alan Walker", R.raw.allfallsdown_alanwalker, R.raw.allfallsdown));
-        songs.add(new Song("無條件", "陳奕迅", R.raw.vodieukien_trandichtan, R.raw.vodieukien));
+        songs.add(new Song(1, "Năm ấy", "Đức Phúc", "/mnt/sdcard/namay_ducphuc.mp3", "/mnt/sdcard/namay.lrc"));
+        songs.add(new Song(2, "All Falls Down", "Alan Walker", "/mnt/sdcard/allfallsdown_alanwalker.mp3", "/mnt/sdcard/allfallsdown.lrc"));
+        songs.add(new Song(3, "無條件", "陳奕迅", "/mnt/sdcard/vodieukien_trandichtan.mp3", "/mnt/sdcard/vodieukien.lrc"));
 
         songListRecyclerView = (RecyclerView) findViewById(R.id.songList);
         layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -72,9 +73,10 @@ public class SongListActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("mp3ID", songs.get(position - 1).getMp3ID());
-                intent.putExtra("lyricID", songs.get(position - 1).getLyricID());
+                intent.putExtra("mp3Path", songs.get(position).getMp3Path());
+                intent.putExtra("lyricPath", songs.get(position).getLyricPath());
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -87,14 +89,14 @@ public class SongListActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (searchBox.getText().toString().trim().length() > 0){
+                if (searchBox.getText().toString().trim().length() > 0) {
                     title.setText("Kết quả tìm kiếm");
                 } else {
                     title.setText("Bài hát đề cử");
                 }
 
-                for(Song s : songs){
-                    if (s.getName()!=null && removeAccent(s.getName()).contains(removeAccent(searchBox.getText().toString().toLowerCase()))) {
+                for (Song s : songs) {
+                    if (s.getName() != null && removeAccent(s.getName()).contains(removeAccent(searchBox.getText().toString().toLowerCase()))) {
                         results.add(s);
                     }
                 }
@@ -106,6 +108,8 @@ public class SongListActivity extends AppCompatActivity {
                 songListAdapter.notifyDataSetChanged();
             }
         });
+
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     static String removeAccent(String s) {

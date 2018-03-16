@@ -5,16 +5,25 @@ package com.example.cpu11341_local.lyrickaraoketalk.model;
  */
 
 public class Song {
+    int id;
     String name;
     String artist;
-    int mp3ID;
-    int lyricID;
+    String mp3Path;
+    String lyricPath;
 
-    public Song(String name, String artist, int mp3ID, int lyricID) {
+    public Song(int id, String name, String artist, String mp3Path, String lyricPath) {
         this.name = name;
         this.artist = artist;
-        this.mp3ID = mp3ID;
-        this.lyricID = lyricID;
+        this.mp3Path = mp3Path;
+        this.lyricPath = lyricPath;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -33,19 +42,19 @@ public class Song {
         this.artist = artist;
     }
 
-    public int getMp3ID() {
-        return mp3ID;
+    public String getMp3Path() {
+        return mp3Path;
     }
 
-    public void setMp3ID(int mp3ID) {
-        this.mp3ID = mp3ID;
+    public void setMp3Path(String mp3Path) {
+        this.mp3Path = mp3Path;
     }
 
-    public int getLyricID() {
-        return lyricID;
+    public String getLyricPath() {
+        return lyricPath;
     }
 
-    public void setLyricID(int lyricID) {
-        this.lyricID = lyricID;
+    public void setLyricPath(String lyricPath) {
+        this.lyricPath = lyricPath;
     }
 }

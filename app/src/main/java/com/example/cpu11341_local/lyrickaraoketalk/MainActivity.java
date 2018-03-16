@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -21,6 +22,8 @@ import com.example.cpu11341_local.lyrickaraoketalk.utils.LyricUtils;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,6 +35,8 @@ public class MainActivity extends Activity {
     CountDownTimer countDownTimer;
     DonutProgress donutProgress;
     TextView lyricTimer;
+    String mp3Path;
+    String lyricPath;
 
     void init(){
         lyricView = (LyricView) findViewById(R.id.lyricView);
@@ -56,34 +61,35 @@ public class MainActivity extends Activity {
             }
         });
 
-        Integer mp3ID = null, lyricID = null;
+        mp3Path = "";
+        lyricPath = "";
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            mp3ID = bundle.getInt("mp3ID");
-            lyricID = bundle.getInt("lyricID");
+            mp3Path = bundle.getString("mp3Path");
+            lyricPath = bundle.getString("lyricPath");
 
-            if (mp3ID != null && lyricID != null) {
+            if (mp3Path != null && lyricPath != null) {
                 try {
-                    onMusicPlaying(lyricID, mp3ID, getApplicationContext());
-                }catch (Resources.NotFoundException e){
-
+                    onMusicPlaying(lyricPath, mp3Path, getApplicationContext());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
             }
         }
     }
 
-    private void onMusicPlaying(int lyricID, int mp3ID, Context context){
-        lyricView.setLyric(LyricUtils.parseLyric(
-                getResources().openRawResource(lyricID), "UTF-8"));
+    private void onMusicPlaying(String lyricPath, String mp3Path, Context context) throws IOException {
+        lyricView.setLyric(LyricUtils.parseLyric(new File(lyricPath), "UTF-8"));
         lyricView.setLyricIndex(0);
         lyricView.setLooping(true);
         lyricView.play();
 
         lyricTimer.setVisibility(View.VISIBLE);
 
-        mp = MediaPlayer.create(getApplicationContext(), mp3ID);// the song is a filename which i have pasted inside a folder **raw** created under the **res** folder.//
+        mp = new MediaPlayer();
+        mp.setDataSource(mp3Path);
         mp.setLooping(true);
+        mp.prepare();
         lyricView.setLyricLength(mp.getDuration());
         mp.start();
 
@@ -130,6 +136,12 @@ public class MainActivity extends Activity {
         if (mp != null) {
             mp.stop();
             mp.release();
+        }
+        if (mp3Path != null && lyricPath != null){
+            File mp3File = new File(mp3Path);
+            File lyricFile = new File(lyricPath);
+            mp3File.delete();
+            lyricFile.delete();
         }
         super.onDestroy();
     }
